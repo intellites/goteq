@@ -1,1 +1,1 @@
-# goteq
+# GoTEQ makes the Go development simple.
