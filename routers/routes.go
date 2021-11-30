@@ -7,6 +7,6 @@ import (
 var Routes = RoutePrefix{
 	"/api/v1",
 	[]Route{
-		{"UsersIndex", "GET", "/hello", user.UsersIndex, false},
+		{"UsersIndex", "GET", "/users", user.UsersIndex, false},
 	},
 }
