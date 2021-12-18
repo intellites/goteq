@@ -18,6 +18,7 @@ var MiddlewareRoutes = RoutePrefix{
 	"/api/auth",
 	[]Route{
 		{"Middlware Autentication", "POST", "/token", Authenticate, false},
+		{"Middlware Autentication", "POST", "/users", user.CreateAuthUser, false},
 	},
 }
 

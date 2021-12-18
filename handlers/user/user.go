@@ -6,9 +6,9 @@ import (
 
 type User struct {
 	ID       int    `json:"id" gorm:"primary_key"`
-	Username string `json:"username" gorm:"not null;unique"`
-	Email    string `json:"email" gorm:"not null;unique"`
-	Password string `json:"password" gorm:"not null"`
+	Username string `json:"username" gorm:"not null;unique" validate:"required"`
+	Email    string `json:"email" gorm:"not null;unique" validate:"required,email"`
+	Password string `json:"password" gorm:"not null" validate:"required"`
 }
 
 func init() {
