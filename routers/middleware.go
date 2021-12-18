@@ -28,8 +28,7 @@ func Middleware(next http.Handler) http.Handler {
 		tokenString := r.Header.Get("Authorization")
 
 		if len(tokenString) == 0 {
-			w.WriteHeader(http.StatusUnauthorized)
-			w.Write([]byte("Missing Authorization Header"))
+			provider.Error(w, http.StatusUnauthorized, "Missing Authorization Header")
 			return
 		}
 
@@ -38,16 +37,27 @@ func Middleware(next http.Handler) http.Handler {
 		claims, err := VerifyToken(tokenString)
 
 		if err != nil {
-			w.WriteHeader(http.StatusUnauthorized)
-			w.Write([]byte("Error verifying JWT token: " + err.Error()))
+			provider.Error(w, http.StatusUnauthorized, "Error verifying JWT token: "+err.Error())
 			return
 		}
 
 		email := claims.(jwt.MapClaims)["email"].(string)
-		roles := claims.(jwt.MapClaims)["roles"].(string)
 
+		// Get the user from the database
+		user := GetUserByEmail(email)
+
+		// Validate the user
+		if len(user.Email) == 0 {
+			provider.Error(w, http.StatusUnauthorized, "User not found.")
+			return
+		}
+
+		// Marshal the user roles to json
+		roles, _ := json.Marshal(GetUserRoles(user))
+
+		// Set the user to the request context
 		r.Header.Set("email", email)
-		r.Header.Set("roles", roles)
+		r.Header.Set("roles", string(roles))
 
 		next.ServeHTTP(w, r)
 	})
@@ -70,7 +80,7 @@ func Authenticate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get the user from the database
-	user := GetUserByEmail(w, request.Email)
+	user := GetUserByEmail(request.Email)
 
 	if len(user.Email) == 0 {
 		provider.Error(w, http.StatusUnauthorized, "User not found.")
@@ -120,13 +130,13 @@ func GetToken(user user.User) (string, error) {
 }
 
 // Get user roles for token
-func GetUserRoles(user user.User) map[int]string {
-	var tokenRoles = map[int]string{}
+func GetUserRoles(user user.User) []string {
+	tokenRoles := make([]string, 0)
 	roles := user.Roles
 
 	if len(roles) > 0 {
-		for index, role := range roles {
-			tokenRoles[index] = strings.ToLower(role.Name)
+		for _, role := range roles {
+			tokenRoles = append(tokenRoles, strings.ToLower(role.Name))
 		}
 	}
 
@@ -134,11 +144,11 @@ func GetUserRoles(user user.User) map[int]string {
 }
 
 // Get user email for authentication
-func GetUserByEmail(w http.ResponseWriter, email string) user.User {
+func GetUserByEmail(email string) user.User {
 	user := user.User{}
 
 	// Find user by email
 	database.DB.Preload("Roles").Where("email = ?", email).First(&user)
-	log.Println(user)
+
 	return user
 }
