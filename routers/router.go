@@ -26,7 +26,7 @@ func NewRouter() *mux.Router {
 	router := mux.NewRouter()
 
 	// Append handlers
-	AppRoutes = append(AppRoutes, Routes)
+	AppRoutes = append(AppRoutes, MiddlewareRoutes, Routes)
 
 	for _, route := range AppRoutes {
 
@@ -41,7 +41,7 @@ func NewRouter() *mux.Router {
 
 			// Check to see if route should be protected with jwt
 			if r.Protected {
-				// handler = JSONContentTypeMiddleware(r.HandlerFunc)
+				handler = Middleware(r.HandlerFunc)
 			}
 
 			// Attach sub route

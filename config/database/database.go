@@ -23,8 +23,10 @@ func init() {
 			env.DB_Host, env.DB_Port, env.DB_Database,
 			env.DB_Username, env.DB_Password, env.DB_SSL_Mode),
 	), &gorm.Config{})
+
 	if err != nil {
 		log.Println("[INIT] failed connecting to PostgreSQL")
 	}
+
 	log.Println("[INIT] connected to PostgreSQL")
 }

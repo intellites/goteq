@@ -38,5 +38,5 @@ func init() {
 		log.Fatalln("Error reading config file:", err)
 	}
 
-	log.Println("[INIT] Configuration loaded")
+	log.Println("[INIT] Environment configuration loaded")
 }

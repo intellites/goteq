@@ -5,11 +5,12 @@ import (
 )
 
 type User struct {
-	ID       int    `json:"id"`
-	Username string `json:"username"`
-	Email    string `json:"email"`
+	ID       int    `json:"id" gorm:"primary_key"`
+	Username string `json:"username" gorm:"not null;unique"`
+	Email    string `json:"email" gorm:"not null;unique"`
+	Password string `json:"password" gorm:"not null"`
 }
 
 func init() {
-	database.DB.AutoMigrate(&User{})
+	database.DB.Statement.AutoMigrate(&User{})
 }

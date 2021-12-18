@@ -1,4 +1,4 @@
-package database
+package routers
 
 import (
 	"log"
@@ -9,12 +9,7 @@ import (
 var env Config
 
 type Config struct {
-	DB_Host     string
-	DB_Port     int
-	DB_SSL_Mode string
-	DB_Database string
-	DB_Username string
-	DB_Password string
+	JWT_SECRET string
 }
 
 func init() {
@@ -30,8 +25,8 @@ func init() {
 	var err = viper.Unmarshal(&env)
 
 	if err != nil {
-		log.Fatalln("Error reading database config file:", err)
-	} else {
-		log.Println("[INIT] Database configuration loaded!")
+		log.Fatalln("Error reading config file:", err)
 	}
+
+	log.Println("[INIT] Configuration loaded")
 }

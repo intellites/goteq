@@ -19,3 +19,9 @@ tmp/
 
 # Enviornment variables
 .env
+
+# Gin
+gin-bin
+
+# System files
+.DS_Store
